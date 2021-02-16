@@ -1,0 +1,8 @@
+MNE     OPCODE
+ADD     01
+SUB     02
+DIV     03
+MOVER   04
+MOVEM   05
+JMP     06
+STOP    07

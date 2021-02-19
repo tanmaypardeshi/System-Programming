@@ -18,110 +18,45 @@ typedef struct op1
     int code;
 } Op1;
 
+Op1 values[11] = {
+    {"AREG", 'r', 1},
+    {"BREG", 'r', 2},
+    {"CREG", 'r', 3},
+    {"DREG", 'r', 4},
+    {"LT", 'c', 1},
+    {"LE", 'c', 2},
+    {"GT", 'c', 3},
+    {"GE", 'c', 4},
+    {"EQ", 'c', 5},
+    {"NE", 'c', 6},
+    {"ANY", 'c', 7}};
+
+string arr[18];
+
+Mot motValues[18];
+
+map<string, pair<char, int>> operand_1_map;
+map<string, Mot> hash_table;
+map<string, int> symbol_table;
+
+ifstream hash_file, input_file;
+
+void initialise_operand1();
+void create_mot_hash_table();
+
 int main()
 {
-    // i and count for loops
-    int i, count = 0;
+    string token1, token2, token3, token4;
+    int count = 0, index = 0, lc = 0;
 
-    // Op1 values
-    Op1 values[11] = {
-        {"AREG", 'r', 1},
-        {"BREG", 'r', 2},
-        {"CREG", 'r', 3},
-        {"DREG", 'r', 4},
-        {"LT", 'c', 1},
-        {"LE", 'c', 2},
-        {"GT", 'c', 3},
-        {"GE", 'c', 4},
-        {"EQ", 'c', 5},
-        {"NE", 'c', 6},
-        {"ANY", 'c', 7}};
+    // Create map for operand 1 array
+    initialise_operand1();
 
-    // Array of string for storing mnemonics
-    string arr[18];
-
-    // Array of struct to store the rest of the MOT entities
-    Mot motValues[18];
-
-    // Operand 1 map to map the Op1 array
-    map<string, pair<char, int>> operand_1_map;
-
-    // Hash table of key as mnemonic and value as the MOT entities
-    map<string, Mot> hash_table;
-
-    // Input file stream for taking the MOT text file as input
-    ifstream hash_file;
-
-    // Input file stream for the input code to be converted to IC
-    ifstream input_file;
-
-    // Entities of the input file
-    string label, mnemonic, operand1, operand2;
-
-    // Operand 2 symbol table as a map
-    map<string, int> symbol_table;
-
-    // To maintain index in symbol table
-    int index = 0;
-
-    // Create a map for the operand 1 array
-    for (i = 0; i < 11; i++)
-    {
-        operand_1_map.insert(std::make_pair((values[i].operand), (std::make_pair(values[i].type, values[i].code))));
-    }
-
-    // Open the MOT
-    hash_file.open("hashing.txt", ios::in);
-
-    //Traversing the file and creating the hash table
-
-    if (hash_file.good()) // Ff file is found
-    {
-        string temp;
-        while (getline(hash_file, temp))
-        // Read the MOT file line by line
-        {
-            char tempCharArray[200];
-
-            strcpy(tempCharArray, temp.c_str());
-
-            char *token;
-            char *rest = tempCharArray;
-            // Tokenise words in the line
-            token = strtok_r(rest, "\t", &rest);
-            arr[count] = token;
-
-            token = strtok_r(rest, "\t", &rest);
-            motValues[count].opcode = token;
-
-            token = strtok_r(rest, "\t", &rest);
-            motValues[count].size = token;
-
-            token = strtok_r(rest, "\t", &rest);
-            motValues[count].type = token;
-
-            token = strtok_r(rest, "\t", &rest);
-            motValues[count].noOfOperands = token;
-
-            count++;
-        }
-    }
-
-    hash_file.close();
-
-    //Creating the hash table
-
-    for (int i = 0; i < 18; i++)
-    {
-        hash_table[arr[i]] = motValues[i];
-    }
+    // Creating MOT hash table
+    create_mot_hash_table();
 
     // Taking the input from file and appyling pass 1 algorithm
     input_file.open("input.txt");
-
-    // Reinitialise the count to 0
-
-    count = 0;
 
     cout << "-------------------------------------" << endl;
 
@@ -139,47 +74,66 @@ int main()
             char *rest = tempArray;
 
             token = strtok_r(rest, " ", &rest);
-            label = token;
+            token1 = token;
 
             token = strtok_r(rest, " ", &rest);
-            mnemonic = token;
+            token2 = token;
 
             token = strtok_r(rest, " ", &rest);
-            operand1 = token;
+            token3 = token;
 
             token = strtok_r(rest, "\t", &rest);
-            operand2 = token;
+            token4 = token;
 
-            cout << "\nLine number : " << count + 1 << endl;
-            cout << "Label : " << label << endl;
+            // cout << token1 << "\t" << token2 << "\t" << token3 << "\t" << token4 << "\n";
 
-            // Look for the data of the mnemonic in the hash_table
-            cout << "Intermediate code will be : " << endl;
-            cout << "\nMnemonic : " << mnemonic << endl;
-            cout << "(Type, Opcode) : (" << hash_table[mnemonic].type << ", " << hash_table[mnemonic].opcode << ")" << endl;
-
-            // Look for the operand 1 type and code in the operand 1 map
-            cout << "\nOperand 1 : " << operand1 << endl;
-            if (operand_1_map[operand1].first != '-')
-                cout << "(Type, Code) : (" << operand_1_map[operand1].first << ", " << operand_1_map[operand1].second << ")" << endl;
-
-            cout << "\nOperand 2 : " << operand2 << endl;
-            // If operand 2 contains an alphabet, find/add to symbol table
-            if (isalpha(operand2[0]) != 0)
+            if (lc == 0)
             {
-                // Find the operand in the operand table first, and if not found, add the operand to the next index in the map
-                if (symbol_table.find(operand2) == symbol_table.end())
-                    //not found
-                    symbol_table[operand2] = index++;
-                // Display Operand 2
-                cout << "(Type, Index) : ("
-                     << "S, " << symbol_table[operand2] << ")" << endl;
+                // initial state
+                cout << "-\t";
             }
-            // If operand 2 is a digit, then directly write it as a constant
             else
             {
-                cout << "(Type, Value) : "
-                     << "(C, " << operand2 << ")" << endl;
+                cout << lc << "\t";
+            }
+
+            if (token1.compare("-") == 0)
+            {
+                //if label is  not present
+                cout << token1 << "\t";
+            }
+            else
+            {
+                // if label is present
+                if (symbol_table.find(token1) == symbol_table.end())
+                    symbol_table[token1] = index++;
+                cout << symbol_table[token1] << "\t";
+            }
+
+            cout << "(" << hash_table[token2].type << ", " << hash_table[token2].opcode << ")\t";
+
+            if (token3.compare("-") == 0)
+            {
+                // if operand 1 is absent
+                cout << token3 << "\t";
+            }
+            else
+            {
+                cout << "(" << operand_1_map[token3].first << ", " << operand_1_map[token3].second << ")\t";
+            }
+
+            if (isalpha(token4[0]) != 0)
+            {
+                if (symbol_table.find(token4) == symbol_table.end())
+                    symbol_table[token4] = index++;
+                cout << "("
+                     << "S, " << symbol_table[token4] << ")\t\n";
+                lc += stoi(hash_table[token2].size);
+            }
+            else
+            {
+                cout << "(C, " << token4 << ")\t\n";
+                lc += stoi(token4);
             }
 
             count++;
@@ -192,129 +146,61 @@ int main()
     return 0;
 }
 
-/* Output
+void initialise_operand1()
+{
+    // Create a map for the operand 1 array
+    for (int i = 0; i < 11; i++)
+    {
+        operand_1_map.insert(make_pair((values[i].operand), (make_pair(values[i].type, values[i].code))));
+    }
+}
 
-tanmay@Predator:~/Code/SP$ g++ 33259_assembler_ver6.cpp 
-tanmay@Predator:~/Code/SP$ ./a.out 
--------------------------------------
+void create_mot_hash_table()
+{
+    int count = 0;
 
-Line number : 1
-Label : -
-Intermediate code will be : 
+    // Open the MOT
+    hash_file.open("hashing.txt", ios::in);
 
-Mnemonic : START
-(Type, Opcode) : (    AD, 01)
+    //Traversing the file and creating the hash table
+    if (hash_file.good()) // Ff file is found
+    {
+        string temp;
+        while (getline(hash_file, temp))
+        // Read the MOT file line by line
+        {
+            char tempCharArray[200];
 
-Operand 1 : -
-(Type, Code) : (, 0)
+            strcpy(tempCharArray, temp.c_str());
 
-Operand 2 : 2000
-(Type, Value) : (C, 2000)
+            char *token;
+            char *rest = tempCharArray;
+            // Tokenise words in the line
+            token = strtok_r(rest, " ", &rest);
+            arr[count] = token;
 
-Line number : 2
-Label : -
-Intermediate code will be : 
+            token = strtok_r(rest, " ", &rest);
+            motValues[count].opcode = token;
 
-Mnemonic : MOVER
-(Type, Opcode) : (    IS, 04)
+            token = strtok_r(rest, " ", &rest);
+            motValues[count].size = token;
 
-Operand 1 : AREG
-(Type, Code) : (r, 1)
+            token = strtok_r(rest, " ", &rest);
+            motValues[count].type = token;
 
-Operand 2 : A
-(Type, Index) : (S, 0)
+            token = strtok_r(rest, " ", &rest);
+            motValues[count].noOfOperands = token;
 
-Line number : 3
-Label : -
-Intermediate code will be : 
+            count++;
+        }
+    }
 
-Mnemonic : ADD
-(Type, Opcode) : (    IS,     01)
+    hash_file.close();
 
-Operand 1 : AREG
-(Type, Code) : (r, 1)
+    //Creating the hash table
 
-Operand 2 : X
-(Type, Index) : (S, 1)
-
-Line number : 4
-Label : -
-Intermediate code will be : 
-
-Mnemonic : DIV
-(Type, Opcode) : (    IS,     08)
-
-Operand 1 : BREG
-(Type, Code) : (r, 2)
-
-Operand 2 : A
-(Type, Index) : (S, 0)
-
-Line number : 5
-Label : XYZ
-Intermediate code will be : 
-
-Mnemonic : SUB
-(Type, Opcode) : (    IS,     02)
-
-Operand 1 : DREG
-(Type, Code) : (r, 4)
-
-Operand 2 : A
-(Type, Index) : (S, 0)
-
-Line number : 6
-Label : -
-Intermediate code will be : 
-
-Mnemonic : STOP
-(Type, Opcode) : (    IS, 00)
-
-Operand 1 : -
-(Type, Code) : (, 0)
-
-Operand 2 : C
-(Type, Index) : (S, 2)
-
-Line number : 7
-Label : A
-Intermediate code will be : 
-
-Mnemonic : DC
-(Type, Opcode) : (    DL,     01)
-
-Operand 1 : -
-(Type, Code) : (, 0)
-
-Operand 2 : 10
-(Type, Value) : (C, 10)
-
-Line number : 8
-Label : X
-Intermediate code will be : 
-
-Mnemonic : DS
-(Type, Opcode) : (    DL,     02)
-
-Operand 1 : -
-(Type, Code) : (, 0)
-
-Operand 2 : 100
-(Type, Value) : (C, 100)
-
-Line number : 9
-Label : -
-Intermediate code will be : 
-
-Mnemonic : END
-(Type, Opcode) : (    AD,     04)
-
-Operand 1 : -
-(Type, Code) : (, 0)
-
-Operand 2 : B
-(Type, Index) : (S, 3)
--------------------------------------
-tanmay@Predator:~/Code/SP$ 
-
-*/
+    for (int i = 0; i < 18; i++)
+    {
+        hash_table[arr[i]] = motValues[i];
+    }
+}

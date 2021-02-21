@@ -18,6 +18,13 @@ typedef struct op1
     int code;
 } Op1;
 
+typedef struct symtab
+{
+    int lc;
+    int value;
+    int size;
+} SymTab;
+
 Op1 values[11] = {
     {"AREG", 'r', 1},
     {"BREG", 'r', 2},
@@ -32,12 +39,19 @@ Op1 values[11] = {
     {"ANY", 'c', 7}};
 
 string arr[18];
+string token1, token2, token3, token4;
+
+int lc = 0;
 
 Mot motValues[18];
 
 map<string, pair<char, int>> operand_1_map;
 map<string, Mot> hash_table;
-map<string, int> symbol_table;
+map<string, SymTab> symbol_table;
+map<string, int> literal_table;
+vector<int> pool_table;
+map<string, SymTab>::iterator itrs;
+map<string, int>::iterator itrl;
 
 ifstream hash_file, input_file;
 
@@ -46,9 +60,7 @@ void create_mot_hash_table();
 
 int main()
 {
-    string token1, token2, token3, token4;
-    int count = 0, index = 0, lc = 0;
-
+    pool_table.push_back(0);
     // Create map for operand 1 array
     initialise_operand1();
 
@@ -66,7 +78,6 @@ int main()
         while (getline(input_file, temp))
         {
             char tempArray[200];
-
             // Tokenise words in the line
             strcpy(tempArray, temp.c_str());
 
@@ -85,8 +96,10 @@ int main()
             token = strtok_r(rest, "\t", &rest);
             token4 = token;
 
-            // cout << token1 << "\t" << token2 << "\t" << token3 << "\t" << token4 << "\n";
-
+            if (token2.compare("END") == 0)
+            {
+                cout << "Pool table index is:- " << pool_table[pool_table.size() - 1] << endl;
+            }
             if (lc == 0)
             {
                 // initial state
@@ -97,17 +110,14 @@ int main()
                 cout << lc << "\t";
             }
 
-            if (token1.compare("-") == 0)
+            if (token1.compare("-") != 0)
             {
-                //if label is  not present
-                cout << token1 << "\t";
-            }
-            else
-            {
-                // if label is present
                 if (symbol_table.find(token1) == symbol_table.end())
-                    symbol_table[token1] = index++;
-                cout << symbol_table[token1] << "\t";
+                {
+                    symbol_table[token1].lc = lc;
+                    symbol_table[token1].value = -1;
+                    symbol_table[token1].size = -1;
+                }
             }
 
             cout << "(" << hash_table[token2].type << ", " << hash_table[token2].opcode << ")\t";
@@ -122,21 +132,77 @@ int main()
                 cout << "(" << operand_1_map[token3].first << ", " << operand_1_map[token3].second << ")\t";
             }
 
-            if (isalpha(token4[0]) != 0)
+            if (token2.compare("DC") == 0 || token2.compare("DS") == 0)
+            {
+                if (token4.at(0) == '\'')
+                    token4 = token4.substr(1, token4.length() - 2);
+                cout
+                    << "(C, " << token4 << ")\t" << endl;
+                symbol_table[token1].lc = lc;
+                symbol_table[token1].lc = lc;
+                if (token2.compare("DC") == 0)
+                {
+                    symbol_table[token1].value = stoi(token4);
+                    symbol_table[token1].size = 1;
+                    lc += 1;
+                }
+                else if (token2.compare("DS") == 0)
+                {
+                    symbol_table[token1].value = -1;
+                    symbol_table[token1].size = stoi(token4);
+                    lc += stoi(token4);
+                }
+            }
+            else if (token4.compare("-") == 0)
+            {
+                cout << token4 << endl;
+                lc += stoi(hash_table[token2].size);
+            }
+            else if (token4.at(0) == '=')
+            {
+                literal_table[token4] = -1;
+                itrl = literal_table.find(token4);
+                size_t index = distance(literal_table.begin(), itrl);
+                cout << "(L, " << index << ")\t" << endl;
+                lc += stoi(hash_table[token2].size);
+            }
+            else if (isalpha(token4[0]) != 0)
             {
                 if (symbol_table.find(token4) == symbol_table.end())
-                    symbol_table[token4] = index++;
-                cout << "("
-                     << "S, " << symbol_table[token4] << ")\t\n";
+                {
+                    symbol_table[token4].lc = -1;
+                    symbol_table[token4].value = -1;
+                    symbol_table[token4].size = -1;
+                }
+                itrs = symbol_table.find(token4);
+                size_t index = distance(symbol_table.begin(), itrs);
+                cout << "(S, " << index << ")\t" << endl;
                 lc += stoi(hash_table[token2].size);
             }
             else
             {
-                cout << "(C, " << token4 << ")\t\n";
+                if (token4.at(0) == '\'')
+                    token4 = token4.substr(1, token4.length() - 2);
+                cout
+                    << "(C, " << token4 << ")\t" << endl;
                 lc += stoi(token4);
             }
-
-            count++;
+            symbol_table.erase("-");
+        }
+        cout << "\nSymbol Table is:- " << endl;
+        for (auto x : symbol_table)
+        {
+            cout << x.first << "\t" << x.second.lc << "\t" << x.second.value << "\t" << x.second.size << endl;
+        }
+        cout << "\nLiteral Table is:- " << endl;
+        for (auto x : literal_table)
+        {
+            cout << x.first << "\t" << x.second << endl;
+        }
+        cout << "\nPool Table is:- " << endl;
+        for (auto x : pool_table)
+        {
+            cout << "#" << x << endl;
         }
     }
     cout << "-------------------------------------" << endl;

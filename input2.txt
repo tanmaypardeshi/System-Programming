@@ -1,0 +1,17 @@
+- START - 1000
+- MOVER AREG ='1'
+- SUB CREG ='1'
+- BC LT XYZ
+- DIV AREG ='2'
+XYZ ADD DREG ='3'
+- LTORG - -
+- DIV CREG A
+- SUB CREG ='1'
+- MOVEM AREG ='2'
+- LTORG - -
+- STOP - -
+A DC - '10'
+B DS - 10
+- END - -
+
+

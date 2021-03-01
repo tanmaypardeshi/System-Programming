@@ -1,3 +1,6 @@
 *.out
 .vscode
 .idea
+
+pass1/*.out
+pass2/*.out

@@ -176,7 +176,7 @@ void handle_pass_2()
                 }
                 else if (mnemonic.substr(0, 2).compare("DL") == 0)
                 {
-                    bool flag = isDc(stoi(lc));
+                    bool flag = isDc(stoi(mnemonic.substr(3, 5)));
                     if (flag)
                     {
                         op2.pop_back();
@@ -199,16 +199,10 @@ void handle_pass_2()
     cout << "-------------------------------------" << endl;
 }
 
-bool isDc(int address)
+bool isDc(int value)
 {
-    for (auto x : symbol_table)
-    {
-        if (address == x.address)
-        {
-            if (x.value != -1)
-                return true;
-        }
-    }
+    if (value == 1)
+        return true;
     return false;
 }
 

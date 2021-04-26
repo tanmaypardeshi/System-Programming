@@ -1,5 +1,6 @@
-# SP
-### Systems Programming Practical exam codes for SPPU IT 
+# System Programming
+
+## All system programming assignments of SPPU Third Year IT Syllabus 
 
 | Folder Name                     | Description                    |
 | :-----------------------------:  | :--------------------------------    |

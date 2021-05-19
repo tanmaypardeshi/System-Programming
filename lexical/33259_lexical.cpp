@@ -42,7 +42,6 @@ int main()
     input_file.close();
 
     // Writing data to the console
-
     write_data();
 
     return 0;

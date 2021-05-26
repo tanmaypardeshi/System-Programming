@@ -24,8 +24,7 @@ void V();
 
 int main()
 {
-
-    cout << "Enter a string to parse:- ";
+    cout << "\nEnter a string to parse:- ";
     cin >> s;
 
     s.append("$");
@@ -33,9 +32,11 @@ int main()
     S();
 
     if (s[ptr] == '$')
-        cout << "String " << s.substr(0, s.length() - 1) << " accepted." << endl;
+        cout << "\nString " << s.substr(0, s.length() - 1) << " accepted.\n"
+             << endl;
     else
-        cout << "String " << s.substr(0, s.length() - 1) << "rejected." << endl;
+        cout << "\nString " << s.substr(0, s.length() - 1) << " rejected.\n"
+             << endl;
 
     return 0;
 }
@@ -96,3 +97,34 @@ void V()
     if (s[ptr] == '0' || s[ptr] == '1' || s[ptr] == '2' || s[ptr] == '3' || s[ptr] == '4' || s[ptr] == '5' || s[ptr] == '6' || s[ptr] == '7' || s[ptr] == '8' || s[ptr] == '9')
         ptr++;
 }
+
+/* Output - 
+
+tanmay@Predator:~/Code/SP/rdp$ g++ 33259_rdp.cpp 
+tanmay@Predator:~/Code/SP/rdp$ ./a.out 
+
+Enter a string to parse:- a+b
+
+String a+b rejected.
+
+tanmay@Predator:~/Code/SP/rdp$ ./a.out 
+
+Enter a string to parse:- 1+2
+
+String 1+2 accepted.
+
+tanmay@Predator:~/Code/SP/rdp$ ./a.out 
+
+Enter a string to parse:- (1) + 3
+
+String (1) accepted.
+
+tanmay@Predator:~/Code/SP/rdp$ ./a.out 
+
+Enter a string to parse:- (1+)3
+
+String (1+)3 rejected.
+
+tanmay@Predator:~/Code/SP/rdp$ 
+
+*/

@@ -1,98 +1,98 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-/*
-Grammar : 
-A -> aAa | bBb
-B -> bBb | NULL
-*/
-
-void A();
-void B();
-
 string s;
 int ptr = 0;
 
+/* Grammar - 
+
+S -> TL
+L -> + S | e
+T -> UM
+M -> *T | e
+U -> (S) | V
+V -> 0 | 1 | 2 | ..... | 9
+
+*/
+
+void S();
+void L();
+void T();
+void M();
+void U();
+void V();
+
 int main()
 {
-    char ask = 'Y';
 
-    while (ask == 'Y' || ask == 'y')
-    {
-        cout << "Enter a string:- ";
-        cin >> s;
+    cout << "Enter a string to parse:- ";
+    cin >> s;
 
-        if (s == "aa" || s.length() % 2 != 0)
-        {
-            cout << "String " << s << " rejected" << endl;
-            cout << "Do you want to continue? (Y/y):- ";
-            cin >> ask;
-            break;
-        }
+    s.append("$");
 
-        s = s.append("$");
+    S();
 
-        A();
+    if (s[ptr] == '$')
+        cout << "String " << s.substr(0, s.length() - 1) << " accepted." << endl;
+    else
+        cout << "String " << s.substr(0, s.length() - 1) << "rejected." << endl;
 
-        if (s[ptr] == '$')
-        {
-            cout << "String " << s.substr(0, s.length() - 1) << " accepted" << endl;
-        }
-        else
-        {
-            cout << "String " << s.substr(0, s.length() - 1) << " rejected" << endl;
-        }
-        cout << "Do you want to continue? (Y/y):- ";
-        cin >> ask;
-    }
     return 0;
 }
 
-void A()
+void S()
 {
-    if (s[ptr] == 'a')
+    T();
+    L();
+}
+
+void L()
+{
+    if (s[ptr] == '+')
     {
         ptr++;
-        A();
-        if (s[ptr] == 'a')
-            ptr++;
-        else
-            return;
-    }
-    if (s[ptr] == 'b')
-    {
-        ptr++;
-        B();
-        if (s[ptr] == 'b')
-            ptr++;
-        else
-            return;
+        S();
     }
     else
-        return;
-}
-
-void B()
-{
-    if (s[ptr] == 'b')
     {
-        ptr++;
-        B();
-        if (s[ptr] == 'b')
-            ptr++;
-        else
-            return;
+        return;
     }
 }
 
-/* Output - 
+void T()
+{
+    U();
+    M();
+}
 
-tanmay@Predator:~/Code/SP/rdp$ ./a.out 
-Enter a string:- aaabbaaa
-String aaabbaaa accepted
-Do you want to continue? (Y/y):- y
-Enter a string:- aa
-String aa rejected
-Do you want to continue? (Y/y):- n
+void M()
+{
+    if (s[ptr] == '*')
+    {
+        ptr++;
+        T();
+    }
+}
 
-*/
+void U()
+{
+    if (s[ptr] == '(')
+    {
+        ptr++;
+        S();
+        if (s[ptr] == ')')
+        {
+            ptr++;
+        }
+    }
+    else
+    {
+        V();
+    }
+}
+
+void V()
+{
+    if (s[ptr] == '0' || s[ptr] == '1' || s[ptr] == '2' || s[ptr] == '3' || s[ptr] == '4' || s[ptr] == '5' || s[ptr] == '6' || s[ptr] == '7' || s[ptr] == '8' || s[ptr] == '9')
+        ptr++;
+}

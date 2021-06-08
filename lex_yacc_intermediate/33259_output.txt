@@ -1,0 +1,12 @@
+(base) Inspiron-5570:~$ ./a.out
+Enter the expression : while(k=c-d)k=k-2;
+L1: 
+t0 = c - d
+k = t0
+t1 = not k
+if t1 goto L0
+t2 = k - 2
+k = t2
+goto L1 
+L0: 
+

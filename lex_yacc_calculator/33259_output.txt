@@ -1,0 +1,13 @@
+tanmay@Predator:~/Code/SP/lex_yacc_calculator$ lex 33259_calculator.l 
+tanmay@Predator:~/Code/SP/lex_yacc_calculator$ yacc -d 33259_calculator.y 
+tanmay@Predator:~/Code/SP/lex_yacc_calculator$ cc y.tab.c -ll -ly
+tanmay@Predator:~/Code/SP/lex_yacc_calculator$ ./calculator 
+
+Enter Any Arithmetic Expression which can have operations Addition, Subtraction, Multiplication, Divison,  Modulus and Round brackets:
+2+3-6
+
+Result=-1
+
+Entered arithmetic expression is Valid
+
+tanmay@Predator:~/Code/SP/lex_yacc_calculator$ 

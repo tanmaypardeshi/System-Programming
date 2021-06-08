@@ -1,4 +1,3 @@
-(base) Inspiron-5570:~$ ./a.out
 Enter the expression : while(k=c-d)k=k-2;
 L1: 
 t0 = c - d
